@@ -41,3 +41,10 @@ class VPSConfig(BaseModel):
     matcher: MatcherConfig = MatcherConfig()
     target_hz: float = 3.0      # target position update rate
     log_level: str = "INFO"
+
+    # EKF settings
+    ekf_measurement_noise: float = 1e-8  # position measurement noise (deg^2)
+    ekf_gate_threshold: float = 9.0      # Mahalanobis gate (chi-sq, 2 DoF)
+
+    # Telemetry
+    telemetry_dir: Path | None = None    # set to enable CSV flight logging

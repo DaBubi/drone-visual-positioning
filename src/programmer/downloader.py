@@ -18,6 +18,8 @@ from programmer.map_pack import tile_image_path
 logger = logging.getLogger(__name__)
 
 MAPBOX_URL = "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.png?access_token={token}"
+OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+ESRI_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
 
 
 async def download_tile(
@@ -28,6 +30,11 @@ async def download_tile(
     provider: str = "mapbox",
 ) -> Path | None:
     """Download a single satellite tile.
+
+    Providers:
+    - mapbox: High-res satellite (requires API key)
+    - osm: OpenStreetMap (no key needed, map tiles not satellite)
+    - esri: ESRI World Imagery (no key needed, satellite)
 
     Returns the saved file path, or None on failure.
     """
@@ -40,6 +47,10 @@ async def download_tile(
 
     if provider == "mapbox":
         url = MAPBOX_URL.format(z=tile.z, x=tile.x, y=tile.y, token=api_key)
+    elif provider == "osm":
+        url = OSM_URL.format(z=tile.z, x=tile.x, y=tile.y)
+    elif provider == "esri":
+        url = ESRI_URL.format(z=tile.z, x=tile.x, y=tile.y)
     else:
         raise ValueError(f"Unknown provider: {provider}")
 
@@ -100,8 +111,9 @@ async def download_area(
             if path is not None:
                 results.append((tile, path))
 
+    headers = {"User-Agent": "DroneVPS/0.1 (visual positioning research)"}
     connector = aiohttp.TCPConnector(limit=concurrency)
-    async with aiohttp.ClientSession(connector=connector) as session:
+    async with aiohttp.ClientSession(connector=connector, headers=headers) as session:
         tasks = [_download(t) for t in all_tiles]
         await asyncio.gather(*tasks)
 
