@@ -1,3 +1,0 @@
-[console_scripts]
-vps-onboard = onboard.main:main
-vps-program = programmer.cli:cli
