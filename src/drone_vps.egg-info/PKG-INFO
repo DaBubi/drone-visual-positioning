@@ -1,0 +1,23 @@
+Metadata-Version: 2.4
+Name: drone-vps
+Version: 0.1.0
+Summary: Drone Visual Positioning System — GPS-denied navigation via satellite image matching
+Requires-Python: >=3.11
+Requires-Dist: numpy>=1.24
+Requires-Dist: opencv-python-headless>=4.8
+Requires-Dist: pydantic>=2.0
+Requires-Dist: pyserial>=3.5
+Provides-Extra: onboard
+Requires-Dist: onnxruntime>=1.17; extra == "onboard"
+Requires-Dist: faiss-cpu>=1.7; extra == "onboard"
+Provides-Extra: programmer
+Requires-Dist: torch>=2.0; extra == "programmer"
+Requires-Dist: kornia>=0.7; extra == "programmer"
+Requires-Dist: faiss-cpu>=1.7; extra == "programmer"
+Requires-Dist: aiohttp>=3.9; extra == "programmer"
+Requires-Dist: click>=8.0; extra == "programmer"
+Requires-Dist: pygeotile>=1.0; extra == "programmer"
+Requires-Dist: tqdm; extra == "programmer"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21; extra == "dev"
