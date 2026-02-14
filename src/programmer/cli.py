@@ -176,6 +176,18 @@ def simulate(pack_dir: Path, trajectory: str, center: str, duration: float,
     click.echo(f"Trajectory saved to {output}")
 
 
+@cli.command()
+@click.argument("pack_dir", type=click.Path(exists=True, path_type=Path))
+def validate(pack_dir: Path):
+    """Validate a map pack before deployment to the drone."""
+    from programmer.validator import validate_map_pack
+
+    result = validate_map_pack(pack_dir)
+    click.echo(result.summary())
+    if not result.valid:
+        raise SystemExit(1)
+
+
 @cli.command("export-models")
 @click.option("--output-dir", "-o", type=click.Path(path_type=Path),
               default=Path("./models"), help="Output directory for ONNX files")
