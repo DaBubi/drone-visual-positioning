@@ -109,6 +109,30 @@ def package_cmd(pack_dir: Path, output: Path | None, include_models: bool, model
 
 
 @cli.command()
+@click.argument("telemetry_csv", type=click.Path(exists=True, path_type=Path))
+@click.option("--format", "fmt", type=click.Choice(["geojson", "html", "both"]),
+              default="both", help="Output format")
+@click.option("--output-dir", "-o", type=click.Path(path_type=Path),
+              default=Path("."), help="Output directory")
+def visualize(telemetry_csv: Path, fmt: str, output_dir: Path):
+    """Generate visualizations from telemetry CSV or simulation results."""
+    from programmer.visualize import telemetry_to_geojson, generate_stats_html
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    stem = telemetry_csv.stem
+
+    if fmt in ("geojson", "both"):
+        out = output_dir / f"{stem}.geojson"
+        telemetry_to_geojson(telemetry_csv, out)
+        click.echo(f"GeoJSON: {out}")
+
+    if fmt in ("html", "both"):
+        out = output_dir / f"{stem}_stats.html"
+        generate_stats_html(telemetry_csv, out)
+        click.echo(f"Stats HTML: {out}")
+
+
+@cli.command()
 @click.argument("pack_dir", type=click.Path(exists=True, path_type=Path))
 @click.option("--trajectory", type=click.Choice(["circle", "line", "lawnmower"]),
               default="circle", help="Flight path type")
