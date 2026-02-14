@@ -210,5 +210,25 @@ def export_models(output_dir: Path, image_size: int, superpoint_only: bool):
             click.echo("Use --use-orb-fallback on RPi instead.")
 
 
+@cli.command()
+@click.argument("flight_file", type=click.Path(exists=True, path_type=Path))
+@click.option("--output-dir", "-o", type=click.Path(path_type=Path),
+              default=Path("./analysis"), help="Output directory")
+def replay(flight_file: Path, output_dir: Path):
+    """Analyze a binary flight recording (.vpsf file)."""
+    from onboard.flight_recorder import FlightRecorder
+    from programmer.replay import analyze_flight, save_analysis
+
+    records = FlightRecorder.read(flight_file)
+    click.echo(f"Loaded {len(records)} records from {flight_file}")
+
+    stats = analyze_flight(records)
+    click.echo(stats.summary())
+
+    outputs = save_analysis(records, output_dir)
+    for name, path in outputs.items():
+        click.echo(f"  {name}: {path}")
+
+
 if __name__ == "__main__":
     cli()
